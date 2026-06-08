@@ -134,7 +134,7 @@ async function insertSubmission(payload) {
       apikey: config.supabaseAnonKey,
       Authorization: `Bearer ${config.supabaseAnonKey}`,
       "Content-Type": "application/json",
-      Prefer: "return=representation",
+      Prefer: "return=minimal",
     },
     body: JSON.stringify(payload),
   });
@@ -142,8 +142,6 @@ async function insertSubmission(payload) {
   if (!response.ok) {
     throw new Error(`投稿写入失败：${await parseError(response)}`);
   }
-
-  return response.json();
 }
 
 function buildPayload(formData, screenshotPath) {
