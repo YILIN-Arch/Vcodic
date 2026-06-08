@@ -6,16 +6,16 @@ This document is the execution order for the VCodic MVP stack.
 
 Target:
 
-- create a GitHub repository named `VCodic`
+- create a GitHub repository named `Vcodic`
 - connect this local repo to the remote
 
 Manual steps:
 
-1. Create a new empty GitHub repository called `VCodic`.
+1. Create a new empty GitHub repository called `Vcodic`.
 2. Run:
 
 ```bash
-git remote add origin git@github.com:<your-account>/VCodic.git
+git remote add origin git@github.com:<your-account>/Vcodic.git
 git add .
 git commit -m "Initial VCodic launch site"
 git push -u origin main
@@ -40,11 +40,14 @@ Recommended defaults:
 Open in Supabase Dashboard:
 
 1. Create the project.
-2. Copy these values into `.env.local` from `.env.example`:
+2. Fill these values into `site-config.js`:
+   - `supabaseUrl`
+   - `supabaseAnonKey`
+3. Keep the same values in reserve for the later `Next.js` phase:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
-3. Run the SQL from:
+4. Run the SQL from:
    - `supabase/schema.sql`
    - `supabase/storage-policies.sql`
 
@@ -76,7 +79,7 @@ Official path:
 
 1. Cloudflare Dashboard
 2. `Workers & Pages`
-3. Select `vcodic-public`
+3. Select `vcodic-git`
 4. Open `Metrics`
 5. Enable `Web Analytics`
 
@@ -122,11 +125,11 @@ Do this only after the 6 items above are complete.
 
 Build order:
 
-1. migrate the static site into `Next.js`
-2. build `/submit`
-3. store submissions in Supabase
-4. upload images to `submission-images`
-5. add success page
+1. finish wiring the static `/submit.html` page to Supabase
+2. store submissions in Supabase
+3. upload images to `submission-images`
+4. add a basic success state and editor review flow
+5. migrate the public site into `Next.js`
 6. add simple review/admin shell
 
 ## 8. Later tools

@@ -8,7 +8,10 @@ Recommended order:
 2. Create a private bucket named `submission-images`.
 3. Run `schema.sql` in the SQL editor.
 4. Run `storage-policies.sql` in the SQL editor.
-5. Copy credentials into `.env.local`.
+5. Fill `site-config.js` with:
+   - `supabaseUrl`
+   - `supabaseAnonKey`
+6. If you later migrate the site to Next.js, copy the same values into `.env.local`.
 
 Files:
 

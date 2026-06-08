@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VCodic | 提交 AI 产品</title>
+    <meta
+      name="description"
+      content="向 VCodic 提交你正在做的 AI 产品，补充一句话介绍、产品链接和可选截图。"
+    />
+    <link rel="canonical" href="https://vcodic.com/submit" />
+    <meta property="og:title" content="VCodic | 提交 AI 产品" />
+    <meta
+      property="og:description"
+      content="把你的 AI 产品提交到 VCodic，进入待审核内容池。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://vcodic.com/submit" />
+    <meta property="og:image" content="/social-card.svg" />
+    <meta name="theme-color" content="#31e6a1" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar submit-topbar">
+        <a class="brand brand-link" href="./index.html" aria-label="返回 VCodic 首页">
+          <div class="brand-mark">V</div>
+          <div class="brand-name">VCodic</div>
+        </a>
+
+        <div class="submit-topbar-meta">
+          <span class="submit-topbar-label">投稿入口</span>
+          <a class="action-link action-link-subtle" href="./index.html">返回首页</a>
+        </div>
+      </header>
+
+      <main class="submit-shell">
+        <section class="submit-panel submit-intro">
+          <p class="hero-eyebrow">内容录入</p>
+          <h1>提交你的 AI 产品</h1>
+          <p class="submit-lead">
+            先收一条能审核、能发布、能回访的结构化投稿。第一版只做最小必需信息。
+          </p>
+
+          <div class="submit-checklist" aria-label="投稿须知">
+            <article class="submit-checklist-item">
+              <strong>会收什么</strong>
+              <p>产品名、链接、一句话介绍、联系人邮箱，截图可选。</p>
+            </article>
+            <article class="submit-checklist-item">
+              <strong>会怎么用</strong>
+              <p>先进入待审核池，通过后再进入公开站点内容流。</p>
+            </article>
+            <article class="submit-checklist-item">
+              <strong>图片要求</strong>
+              <p>支持 JPG、PNG、WEBP，建议首屏截图，5 MB 以内。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="submit-panel submit-form-panel">
+          <div class="section-head section-head-submit">
+            <div>
+              <p class="hero-eyebrow">第一版表单</p>
+              <h2>录入投稿</h2>
+            </div>
+            <p class="submit-aside">
+              提交前请确认链接可访问，文案足够让编辑快速判断价值。
+            </p>
+          </div>
+
+          <div id="submit-config-notice" class="submit-notice submit-notice-warning" hidden></div>
+          <div id="submit-status" class="submit-notice" hidden></div>
+
+          <form id="submission-form" class="submission-form" novalidate>
+            <div class="form-grid">
+              <label class="form-field">
+                <span>产品名称 *</span>
+                <input
+                  id="product-name"
+                  name="product_name"
+                  type="text"
+                  maxlength="80"
+                  placeholder="例如：VCodic"
+                  required
+                />
+              </label>
+
+              <label class="form-field">
+                <span>产品链接 *</span>
+                <input
+                  id="product-url"
+                  name="product_url"
+                  type="url"
+                  maxlength="200"
+                  inputmode="url"
+                  placeholder="https://example.com"
+                  required
+                />
+              </label>
+
+              <label class="form-field form-field-wide">
+                <span>一句话介绍 *</span>
+                <input
+                  id="tagline"
+                  name="tagline"
+                  type="text"
+                  maxlength="120"
+                  placeholder="用户看一眼就知道产品解决什么问题"
+                  required
+                />
+              </label>
+
+              <label class="form-field form-field-wide">
+                <span>详细说明</span>
+                <textarea
+                  id="description"
+                  name="description"
+                  rows="5"
+                  maxlength="1200"
+                  placeholder="补充适用场景、目标用户、与同类产品的差异。"
+                ></textarea>
+              </label>
+
+              <label class="form-field">
+                <span>提交人名称</span>
+                <input
+                  id="creator-name"
+                  name="creator_name"
+                  type="text"
+                  maxlength="40"
+                  placeholder="例如：Allen"
+                />
+              </label>
+
+              <label class="form-field">
+                <span>联系邮箱 *</span>
+                <input
+                  id="contact-email"
+                  name="contact_email"
+                  type="email"
+                  maxlength="120"
+                  inputmode="email"
+                  placeholder="you@example.com"
+                  required
+                />
+              </label>
+
+              <label class="form-field form-field-wide">
+                <span>产品截图</span>
+                <input
+                  id="screenshot"
+                  name="screenshot"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                />
+                <small>可选，JPG / PNG / WEBP，5 MB 以内。</small>
+              </label>
+            </div>
+
+            <div class="submit-actions">
+              <button id="submit-button" class="action action-mint" type="submit">
+                提交审核
+              </button>
+              <p class="submit-legal">
+                提交即表示你同意 VCodic 按
+                <a href="./privacy.html">隐私政策</a>
+                和
+                <a href="./terms.html">使用条款</a>
+                处理这条投稿。
+              </p>
+            </div>
+          </form>
+
+          <section id="submit-success" class="submit-success" hidden aria-live="polite">
+            <p class="hero-eyebrow">已提交</p>
+            <h2>你的投稿已进入待审核池</h2>
+            <p>
+              这条记录已经写入 VCodic 的投稿库。后续通过联系邮箱回访或进入发布流程。
+            </p>
+            <div class="not-found-actions">
+              <a class="action-link" href="./submit.html">继续提交</a>
+              <a class="action-link action-link-subtle" href="./index.html">返回首页</a>
+            </div>
+          </section>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>VCodic</p>
+        <nav class="footer-links" aria-label="页脚链接">
+          <a href="./privacy.html">隐私</a>
+          <a href="./terms.html">条款</a>
+        </nav>
+      </footer>
+    </div>
+
+    <script src="./site-config.js"></script>
+    <script src="./submit.js"></script>
+  </body>
+</html>
