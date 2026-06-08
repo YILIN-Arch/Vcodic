@@ -1,0 +1,17 @@
+{
+  "name": "VCodic",
+  "short_name": "VCodic",
+  "description": "刷到好玩的 AI 小产品，顺手学会它怎么做。",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f8f4",
+  "theme_color": "#31e6a1",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

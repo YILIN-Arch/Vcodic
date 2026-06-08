@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VCodic | 今天有什么 AI 值得试</title>
+    <meta
+      name="description"
+      content="刷到好玩的 AI 小产品，顺手学会它怎么做。面向中文用户的 AI 产品发现与试玩入口。"
+    />
+    <link rel="canonical" href="https://vcodic.com/" />
+    <meta
+      property="og:title"
+      content="VCodic - 今天有什么 AI 值得试"
+    />
+    <meta
+      property="og:description"
+      content="好玩的，实用的，能学会的，都先在这里刷到。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://vcodic.com/" />
+    <meta property="og:image" content="/social-card.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="VCodic - 今天有什么 AI 值得试"
+    />
+    <meta
+      name="twitter:description"
+      content="好玩的，实用的，能学会的，都先在这里刷到。"
+    />
+    <meta name="theme-color" content="#31e6a1" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar reveal">
+        <div class="brand">
+          <div class="brand-mark">V</div>
+          <div class="brand-name">VCodic</div>
+        </div>
+
+        <label class="search-shell" for="search-input">
+          <span class="search-label">搜索</span>
+          <input
+            id="search-input"
+            type="search"
+            placeholder="搜 AI 产品、创作者或关键词"
+          />
+        </label>
+
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar reveal" aria-label="用户信息和分类">
+          <section class="profile-card">
+            <div class="profile-head">
+              <div class="avatar">陈</div>
+              <div>
+                <h2 class="profile-name">小陈</h2>
+                <p class="profile-role">AI 产品观察者</p>
+              </div>
+            </div>
+
+            <div class="profile-stats">
+              <article class="stat-card">
+                <strong id="saved-count">128</strong>
+                <span>收藏</span>
+              </article>
+              <article class="stat-card">
+                <strong id="tried-count">36</strong>
+                <span>试过</span>
+              </article>
+            </div>
+
+            <button class="action action-mint action-block">发作品</button>
+
+            <div class="category-stack" role="tablist" aria-label="产品分类">
+              <button class="category-item active" data-category="all">
+                <span class="category-dot"></span>
+                全部
+              </button>
+              <button class="category-item" data-category="办公">办公</button>
+              <button class="category-item" data-category="设计">设计</button>
+              <button class="category-item" data-category="学习">学习</button>
+              <button class="category-item" data-category="副业">副业</button>
+              <button class="category-item" data-category="娱乐">娱乐</button>
+            </div>
+          </section>
+        </aside>
+
+        <main class="content">
+          <section class="mobile-profile reveal">
+            <div class="mobile-profile-main">
+              <div class="avatar avatar-small">陈</div>
+              <div>
+                <h2 class="profile-name">小陈</h2>
+                <p class="profile-role">AI 产品观察者</p>
+              </div>
+            </div>
+            <div class="mobile-profile-stats">
+              <span>128 收藏</span>
+              <span>36 试过</span>
+            </div>
+            <button class="action action-mint">发作品</button>
+          </section>
+
+          <section class="hero reveal">
+            <div class="hero-copy">
+              <p class="hero-eyebrow">今天值得先刷的</p>
+              <h1>今天有什么 AI 值得试</h1>
+              <p class="hero-subtitle">
+                好玩的，实用的，能学会的，都先在这里刷到。
+              </p>
+            </div>
+
+            <div class="hero-tabs" aria-label="内容排序">
+              <button class="sort-pill active" data-sort="hot">今日热门</button>
+              <button class="sort-pill" data-sort="new">最新发布</button>
+            </div>
+
+            <article class="featured-card" id="featured-card">
+              <div class="featured-preview preview preview-astria">
+                <div class="preview-window">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <div class="preview-panel"></div>
+                <div class="preview-band"></div>
+              </div>
+
+              <div class="featured-body">
+                <div class="featured-kicker">今日主推</div>
+                <h2 id="featured-title">Astria - AI 绘图工具</h2>
+                <p id="featured-description">
+                  一句话生成封面、灵感图和社交配图，不用看参数，打开就能玩。
+                </p>
+
+                <div class="featured-meta">
+                  <span id="featured-creator">小舟</span>
+                  <span id="featured-stats">2.4k 在玩 · 收藏 1.2k · 评论 86</span>
+                </div>
+
+                <div class="featured-actions">
+                  <button class="action action-ink">试玩</button>
+                </div>
+              </div>
+            </article>
+          </section>
+
+          <section class="feed-section reveal">
+            <div class="section-head">
+              <h2>正在被反复试玩</h2>
+              <p>少一点参数，多一点上手。</p>
+            </div>
+            <div class="product-grid" id="product-grid"></div>
+          </section>
+
+          <section class="band-grid reveal">
+            <article class="band-card">
+              <div class="section-head section-head-tight">
+                <h2>今日精选</h2>
+                <p>编辑挑的，不靠堆信息。</p>
+              </div>
+              <div class="mini-list" id="curated-list"></div>
+            </article>
+
+            <article class="band-card">
+              <div class="section-head section-head-tight">
+                <h2>推荐创作者</h2>
+                <p>不是技术博主，是会把产品讲明白的人。</p>
+              </div>
+              <div class="maker-list" id="maker-list"></div>
+            </article>
+          </section>
+
+          <section class="feed-section reveal">
+            <div class="section-head">
+              <h2>继续往下刷</h2>
+              <p>更多轻量、直接、能马上试的 AI 小产品。</p>
+            </div>
+            <div class="product-grid" id="secondary-grid"></div>
+          </section>
+        </main>
+      </div>
+
+      <footer class="site-footer">
+        <p>VCodic</p>
+        <nav class="footer-links" aria-label="页脚链接">
+          <a href="./privacy.html">隐私</a>
+          <a href="./terms.html">条款</a>
+        </nav>
+      </footer>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

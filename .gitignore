@@ -1,0 +1,15 @@
+.DS_Store
+.env
+.env.local
+.env.*.local
+node_modules
+.next
+out
+dist
+coverage
+
+cloudflare-pages-upload/
+cloudflare-pages-upload.zip
+cloudflare-pages-upload-flat.zip
+
+supabase/.temp
