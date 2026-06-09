@@ -15,6 +15,12 @@ Recommended order:
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_ROLE_KEY`
    - `VCODIC_REVIEW_TOKEN`
+
+Public homepage note:
+
+- homepage public feed can fall back to the browser-side anon key
+- this depends on the `anon can read approved submissions` policy in `schema.sql`
+- anon only gets column-level select on public fields; `contact_email`, `review_notes`, `screenshot_path` and other review fields remain non-readable
 7. If you later migrate the site to Next.js, copy the same values into `.env.local`.
 
 Files:

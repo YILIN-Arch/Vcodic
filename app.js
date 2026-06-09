@@ -3,6 +3,8 @@ const state = {
   query: "",
 };
 
+const config = window.VCODIC_CONFIG || {};
+
 const previewClasses = [
   "preview-astria",
   "preview-chatdoc",
@@ -13,6 +15,16 @@ const previewClasses = [
 ];
 
 const feedEndpoint = "/api/feed";
+const publicFeedFields = [
+  "id",
+  "product_name",
+  "product_url",
+  "tagline",
+  "description",
+  "creator_name",
+  "published_at",
+  "created_at",
+].join(",");
 
 const featuredCard = document.querySelector("#featured-card");
 const featuredKicker = document.querySelector("#featured-kicker");
@@ -37,6 +49,18 @@ const mobilePublishedCount = document.querySelector("#mobile-published-count");
 const mobileCreatorCount = document.querySelector("#mobile-creator-count");
 
 let approvedProducts = [];
+
+function isPublicFeedConfigured() {
+  return Boolean(config.supabaseUrl && config.supabaseAnonKey);
+}
+
+function normalizeBaseUrl(value) {
+  return value.replace(/\/+$/, "");
+}
+
+function apiUrl(path) {
+  return `${normalizeBaseUrl(config.supabaseUrl)}${path}`;
+}
 
 function previewClassFor(index) {
   return previewClasses[index % previewClasses.length];
@@ -338,30 +362,85 @@ function renderFetchFailure(message) {
   makerList.innerHTML = makerEmptyMarkup("暂时无法读取提交者列表。");
 }
 
-async function loadFeed() {
+async function parseJsonResponse(response) {
+  try {
+    return await response.json();
+  } catch (error) {
+    return null;
+  }
+}
+
+async function loadFeedFromEdge() {
   const response = await fetch(feedEndpoint, {
     headers: {
       Accept: "application/json",
     },
   });
 
+  const payload = await parseJsonResponse(response);
+
   if (!response.ok) {
     let message = `公开内容读取失败 (${response.status})`;
 
-    try {
-      const payload = await response.json();
-      if (payload && payload.error) {
-        message = payload.error;
-      }
-    } catch (error) {
-      // keep fallback message
+    if (payload && payload.error) {
+      message = payload.error;
     }
 
     throw new Error(message);
   }
 
-  const payload = await response.json();
-  const items = Array.isArray(payload.items) ? payload.items : [];
+  return payload;
+}
+
+async function loadFeedFromPublicRest() {
+  if (!isPublicFeedConfigured()) {
+    throw new Error("公开内容尚未配置 Supabase anon 读取。");
+  }
+
+  const params = new URLSearchParams();
+  params.set("select", publicFeedFields);
+  params.set("status", "eq.approved");
+  params.set("order", "published_at.desc.nullslast,created_at.desc");
+  params.set("limit", "24");
+
+  const response = await fetch(apiUrl(`/rest/v1/submissions?${params.toString()}`), {
+    headers: {
+      Accept: "application/json",
+      apikey: config.supabaseAnonKey,
+      Authorization: `Bearer ${config.supabaseAnonKey}`,
+    },
+  });
+
+  const payload = await parseJsonResponse(response);
+
+  if (!response.ok) {
+    const message =
+      payload?.message ||
+      payload?.error_description ||
+      payload?.error ||
+      `公开内容读取失败 (${response.status})`;
+    throw new Error(message);
+  }
+
+  return {
+    items: Array.isArray(payload) ? payload : [],
+  };
+}
+
+async function loadFeed() {
+  let payload;
+
+  try {
+    payload = await loadFeedFromEdge();
+
+    if (payload?.degraded) {
+      payload = await loadFeedFromPublicRest();
+    }
+  } catch (error) {
+    payload = await loadFeedFromPublicRest();
+  }
+
+  const items = Array.isArray(payload?.items) ? payload.items : [];
   approvedProducts = items.map(normalizeProduct);
 }
 

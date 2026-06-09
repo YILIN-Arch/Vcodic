@@ -10,7 +10,8 @@ Current state:
 - canonical domain and redirects are working
 - `/submit` is live and writes into Supabase
 - screenshot uploads are live through Supabase Storage
-- next milestone is the minimal review flow and replacing the static homepage pool with approved submissions
+- homepage public feed can read approved submissions through Supabase anon + RLS
+- `/review` is the minimal moderation shell and still requires Cloudflare server-side env
 
 Recommended stack:
 

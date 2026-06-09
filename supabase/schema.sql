@@ -19,7 +19,18 @@ create table if not exists public.submissions (
 create index if not exists submissions_status_idx on public.submissions (status);
 create index if not exists submissions_created_at_idx on public.submissions (created_at desc);
 
+revoke select on public.submissions from anon;
 grant insert on public.submissions to anon;
+grant select (
+  id,
+  product_name,
+  product_url,
+  tagline,
+  description,
+  creator_name,
+  published_at,
+  created_at
+) on public.submissions to anon;
 grant select, insert, update, delete on public.submissions to service_role;
 
 alter table public.submissions enable row level security;
@@ -34,6 +45,16 @@ with check (
   and review_notes is null
   and reviewed_at is null
   and published_at is null
+);
+
+drop policy if exists "anon can read approved submissions" on public.submissions;
+create policy "anon can read approved submissions"
+on public.submissions
+for select
+to anon
+using (
+  status = 'approved'
+  and published_at is not null
 );
 
 drop policy if exists "service role can read submissions" on public.submissions;
