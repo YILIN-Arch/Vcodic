@@ -189,6 +189,23 @@ function visibleProducts() {
   return bySort(approvedProducts.filter(matchesQuery));
 }
 
+function pickFeaturedProduct(items) {
+  if (!items.length) {
+    return { product: null, prioritized: false };
+  }
+
+  const imageFirstProduct = items.find((item) => item.imageUrl);
+
+  if (imageFirstProduct) {
+    return {
+      product: imageFirstProduct,
+      prioritized: imageFirstProduct !== items[0],
+    };
+  }
+
+  return { product: items[0], prioritized: false };
+}
+
 function previewClassName(baseClassName, product, options = {}) {
   const classes = [baseClassName];
 
@@ -267,7 +284,7 @@ function updateProfileMetrics(items) {
   mobileProfileRole.textContent = profileRole.textContent;
 }
 
-function updateFeatured(product) {
+function updateFeatured(product, options = {}) {
   if (!product) {
     featuredKicker.textContent = "公开内容池";
     featuredTitle.textContent = "还没有已发布产品";
@@ -284,7 +301,7 @@ function updateFeatured(product) {
     return;
   }
 
-  featuredKicker.textContent = "最新通过";
+  featuredKicker.textContent = options.prioritized ? "优先主推" : "最新通过";
   featuredTitle.textContent = product.title;
   featuredDescription.textContent = product.shortDescription || product.description;
   featuredCreator.textContent = product.creator;
@@ -324,10 +341,13 @@ function productCardMarkup(product) {
 
 function renderProducts() {
   const items = visibleProducts();
-  const featured = items[0] || null;
-  const rest = items.slice(1);
+  const featuredSelection = pickFeaturedProduct(items);
+  const featured = featuredSelection.product;
+  const rest = featured
+    ? items.filter((item) => item.id !== featured.id)
+    : [];
 
-  updateFeatured(featured);
+  updateFeatured(featured, { prioritized: featuredSelection.prioritized });
 
   const primaryItems = rest.slice(0, 4);
   const secondaryItems = rest.slice(4);
