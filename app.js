@@ -62,6 +62,43 @@ function apiUrl(path) {
   return `${normalizeBaseUrl(config.supabaseUrl)}${path}`;
 }
 
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (character) => {
+    switch (character) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case '"':
+        return "&quot;";
+      case "'":
+        return "&#39;";
+      default:
+        return character;
+    }
+  });
+}
+
+function safeHttpUrl(value, fallback = "") {
+  if (!value) {
+    return fallback;
+  }
+
+  try {
+    const url = new URL(value, window.location.href);
+
+    if (url.protocol === "http:" || url.protocol === "https:") {
+      return url.toString();
+    }
+  } catch (error) {
+    return fallback;
+  }
+
+  return fallback;
+}
+
 function previewClassFor(index) {
   return previewClasses[index % previewClasses.length];
 }
@@ -100,6 +137,8 @@ function safeCreator(value) {
 function normalizeProduct(row, index) {
   const publishedAt = row.published_at || row.created_at || null;
   const description = (row.description || "").trim() || row.tagline;
+  const productUrl = safeHttpUrl(row.product_url, "#");
+  const imageUrl = safeHttpUrl(row.screenshot_url, "");
 
   return {
     id: row.id,
@@ -108,7 +147,8 @@ function normalizeProduct(row, index) {
     shortDescription: row.tagline,
     creator: safeCreator(row.creator_name),
     publishedAt,
-    productUrl: row.product_url,
+    productUrl,
+    imageUrl,
     preview: previewClassFor(index),
   };
 }
@@ -149,7 +189,33 @@ function visibleProducts() {
   return bySort(approvedProducts.filter(matchesQuery));
 }
 
-function previewMarkup(product) {
+function previewClassName(baseClassName, product, options = {}) {
+  const classes = [baseClassName];
+
+  if (options.withPreviewShell !== false) {
+    classes.push("preview");
+  }
+
+  classes.push(product.preview);
+
+  if (product.imageUrl) {
+    classes.push("preview-has-image");
+  }
+
+  return classes.join(" ");
+}
+
+function previewMarkup(product, options = {}) {
+  const imageClassName = options.compact ? "preview-image preview-image-compact" : "preview-image";
+
+  if (product.imageUrl) {
+    return `<img class="${imageClassName}" src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.title)} 产品截图" loading="lazy" decoding="async">`;
+  }
+
+  if (options.compact) {
+    return "";
+  }
+
   return `
     <div class="preview-window">
       <span></span>
@@ -163,14 +229,14 @@ function previewMarkup(product) {
 
 function emptyStateMarkup(title, message, actionHref, actionLabel) {
   const actionMarkup = actionHref && actionLabel
-    ? `<a class="action-link" href="${actionHref}">${actionLabel}</a>`
+    ? `<a class="action-link" href="${escapeHtml(safeHttpUrl(actionHref, "./submit.html"))}">${escapeHtml(actionLabel)}</a>`
     : "";
 
   return `
     <article class="empty-state">
       <div>
-        <strong>${title}</strong>
-        <p>${message}</p>
+        <strong>${escapeHtml(title)}</strong>
+        <p>${escapeHtml(message)}</p>
         ${actionMarkup}
       </div>
     </article>
@@ -178,11 +244,11 @@ function emptyStateMarkup(title, message, actionHref, actionLabel) {
 }
 
 function miniEmptyMarkup(message) {
-  return `<article class="mini-item mini-item-empty"><p>${message}</p></article>`;
+  return `<article class="mini-item mini-item-empty"><p>${escapeHtml(message)}</p></article>`;
 }
 
 function makerEmptyMarkup(message) {
-  return `<article class="maker-item maker-item-empty"><p>${message}</p></article>`;
+  return `<article class="maker-item maker-item-empty"><p>${escapeHtml(message)}</p></article>`;
 }
 
 function updateProfileMetrics(items) {
@@ -227,7 +293,7 @@ function updateFeatured(product) {
   featuredLink.target = "_blank";
   featuredLink.rel = "noreferrer";
   featuredLink.textContent = "打开产品";
-  featuredPreview.className = `featured-preview preview ${product.preview}`;
+  featuredPreview.className = previewClassName("featured-preview", product);
   featuredPreview.innerHTML = previewMarkup(product);
   featuredCard.dataset.mode = "ready";
 }
@@ -235,21 +301,21 @@ function updateFeatured(product) {
 function productCardMarkup(product) {
   return `
     <article class="product-card">
-      <div class="preview ${product.preview}">
+      <div class="${previewClassName("product-card-preview", product)}">
         ${previewMarkup(product)}
       </div>
       <div class="product-card-body">
-        <h3>${product.title}</h3>
-        <p>${product.description}</p>
+        <h3>${escapeHtml(product.title)}</h3>
+        <p>${escapeHtml(product.description)}</p>
         <div class="product-meta">
           <div class="creator-chip">
             <span class="creator-dot"></span>
-            <span>${product.creator}</span>
+            <span>${escapeHtml(product.creator)}</span>
           </div>
-          <div class="product-stats">${toDateLabel(product.publishedAt)} 收录</div>
+          <div class="product-stats">${escapeHtml(toDateLabel(product.publishedAt))} 收录</div>
         </div>
         <div class="product-card-actions">
-          <a class="action-link" href="${product.productUrl}" target="_blank" rel="noreferrer">打开产品</a>
+          <a class="action-link" href="${escapeHtml(product.productUrl)}" target="_blank" rel="noreferrer">打开产品</a>
         </div>
       </div>
     </article>
@@ -289,13 +355,15 @@ function renderCurated() {
           (item) => `
             <article class="mini-item">
               <div class="mini-item-main">
-                <div class="mini-preview ${item.preview}"></div>
+                <div class="${previewClassName("mini-preview", item, { withPreviewShell: false })}">
+                  ${previewMarkup(item, { compact: true })}
+                </div>
                 <div>
-                  <h3>${item.title}</h3>
-                  <p>${toLongDateLabel(item.publishedAt)} 收录</p>
+                  <h3>${escapeHtml(item.title)}</h3>
+                  <p>${escapeHtml(toLongDateLabel(item.publishedAt))} 收录</p>
                 </div>
               </div>
-              <a class="action-link" href="${item.productUrl}" target="_blank" rel="noreferrer">打开</a>
+              <a class="action-link" href="${escapeHtml(item.productUrl)}" target="_blank" rel="noreferrer">打开</a>
             </article>
           `,
         )
@@ -331,8 +399,8 @@ function renderMakers() {
               <div class="maker-item-main">
                 <div class="maker-avatar"></div>
                 <div>
-                  <h3>${maker.name}</h3>
-                  <p>已收录 ${maker.count} 条</p>
+                  <h3>${escapeHtml(maker.name)}</h3>
+                  <p>已收录 ${escapeHtml(maker.count)} 条</p>
                 </div>
               </div>
               <span class="follow-button">已发布</span>

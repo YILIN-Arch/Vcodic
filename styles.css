@@ -500,6 +500,22 @@ input {
   border: 1px solid rgba(17, 18, 21, 0.05);
 }
 
+.preview-has-image {
+  background: #eef2eb;
+}
+
+.preview-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.preview-image-compact {
+  object-position: center center;
+}
+
 .preview-window {
   position: absolute;
   top: 18px;
@@ -711,6 +727,10 @@ input {
   min-height: 190px;
 }
 
+.product-card-preview {
+  min-height: 190px;
+}
+
 .product-card-body {
   padding: 14px 6px 2px;
 }
@@ -803,6 +823,7 @@ input {
   border-radius: 16px;
   flex-shrink: 0;
   border: 1px solid rgba(17, 18, 21, 0.05);
+  min-height: 52px;
 }
 
 .mini-item h3,
