@@ -16,6 +16,9 @@
 /submit.js
   Cache-Control: public, max-age=300
 
+/review-panel.js
+  Cache-Control: public, max-age=300
+
 /site-config.js
   Cache-Control: public, max-age=300
 

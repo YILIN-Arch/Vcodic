@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VCodic | 审核面板</title>
+    <meta
+      name="description"
+      content="VCodic 最小审核面板，用于处理待审核 AI 产品投稿。"
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar submit-topbar">
+        <a class="brand brand-link" href="./index.html" aria-label="返回 VCodic 首页">
+          <div class="brand-mark">V</div>
+          <div class="brand-name">VCodic</div>
+        </a>
+
+        <div class="submit-topbar-meta">
+          <span class="submit-topbar-label">审核面板</span>
+          <a class="action-link action-link-subtle" href="./submit.html">查看投稿页</a>
+        </div>
+      </header>
+
+      <main class="submit-shell review-shell">
+        <section class="submit-panel submit-intro review-intro">
+          <p class="hero-eyebrow">Review</p>
+          <h1>处理待审核投稿</h1>
+          <p class="submit-lead">
+            这版只做最小审核流：看待审列表，写备注，改状态，决定是否进入公开首页。
+          </p>
+
+          <div class="submit-checklist" aria-label="审核须知">
+            <article class="submit-checklist-item">
+              <strong>看什么</strong>
+              <p>产品名、链接、一句话介绍、联系邮箱，以及是否带截图。</p>
+            </article>
+            <article class="submit-checklist-item">
+              <strong>怎么发</strong>
+              <p>只有状态为 approved 的记录会进入公开首页。</p>
+            </article>
+            <article class="submit-checklist-item">
+              <strong>怎么连</strong>
+              <p>输入 review token 后，本页调用 Cloudflare server-side API，不在浏览器暴露 service role。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="submit-panel submit-form-panel review-panel">
+          <div class="section-head section-head-submit">
+            <div>
+              <p class="hero-eyebrow">Admin</p>
+              <h2>审核操作</h2>
+            </div>
+            <p class="submit-aside">
+              连接后默认加载 pending。通过时会写入 published_at，拒绝时只保留 reviewed_at。
+            </p>
+          </div>
+
+          <form id="review-auth-form" class="review-auth-form">
+            <label class="form-field review-token-field">
+              <span>Review token</span>
+              <input
+                id="review-token"
+                name="review_token"
+                type="password"
+                autocomplete="off"
+                placeholder="输入 Cloudflare 配置的 review token"
+              />
+            </label>
+            <button class="action action-mint" type="submit">连接审核面板</button>
+            <button id="review-disconnect" class="action action-ghost" type="button">清除 token</button>
+          </form>
+
+          <div id="review-status" class="submit-notice" hidden></div>
+
+          <div class="hero-tabs review-tabs" aria-label="审核筛选">
+            <button class="sort-pill active" data-review-status="pending">待审核</button>
+            <button class="sort-pill" data-review-status="approved">已通过</button>
+            <button class="sort-pill" data-review-status="rejected">已拒绝</button>
+          </div>
+
+          <div id="review-summary" class="review-summary">尚未连接审核接口。</div>
+          <div id="review-list" class="review-list"></div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>VCodic</p>
+        <nav class="footer-links" aria-label="页脚链接">
+          <a href="./privacy.html">隐私</a>
+          <a href="./terms.html">条款</a>
+        </nav>
+      </footer>
+    </div>
+
+    <script src="./review-panel.js"></script>
+  </body>
+</html>

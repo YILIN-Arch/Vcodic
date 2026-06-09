@@ -8,8 +8,9 @@ Current state:
 
 - public static launch is live on Cloudflare Pages
 - canonical domain and redirects are working
-- `/submit.html` is the first self-serve submission page
-- next milestone is wiring `/submit.html` to a real Supabase project and then replacing the static content pool
+- `/submit` is live and writes into Supabase
+- screenshot uploads are live through Supabase Storage
+- next milestone is the minimal review flow and replacing the static homepage pool with approved submissions
 
 Recommended stack:
 

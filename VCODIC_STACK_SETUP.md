@@ -44,9 +44,11 @@ Open in Supabase Dashboard:
    - `supabaseUrl`
    - `supabaseAnonKey`
 3. Keep the same values in reserve for the later `Next.js` phase:
+   - `SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
+   - `VCODIC_REVIEW_TOKEN`
 4. Run the SQL from:
    - `supabase/schema.sql`
    - `supabase/storage-policies.sql`
@@ -125,12 +127,16 @@ Do this only after the 6 items above are complete.
 
 Build order:
 
-1. finish wiring the static `/submit.html` page to Supabase
+1. finish wiring the static `/submit` page to Supabase
 2. store submissions in Supabase
 3. upload images to `submission-images`
-4. add a basic success state and editor review flow
-5. migrate the public site into `Next.js`
-6. add simple review/admin shell
+4. set Cloudflare Pages environment variables for the review/feed functions:
+   - `SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `VCODIC_REVIEW_TOKEN`
+5. use `/review` as the minimal moderation shell
+6. publish only `approved` submissions to the homepage feed
+7. migrate the public site into `Next.js`
 
 ## 8. Later tools
 

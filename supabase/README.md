@@ -11,7 +11,11 @@ Recommended order:
 5. Fill `site-config.js` with:
    - `supabaseUrl`
    - `supabaseAnonKey`
-6. If you later migrate the site to Next.js, copy the same values into `.env.local`.
+6. In Cloudflare Pages, set server-side environment variables for the review/feed functions:
+   - `SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `VCODIC_REVIEW_TOKEN`
+7. If you later migrate the site to Next.js, copy the same values into `.env.local`.
 
 Files:
 
