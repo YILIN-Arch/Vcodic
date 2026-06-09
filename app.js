@@ -428,13 +428,22 @@ async function loadFeedFromPublicRest() {
 }
 
 async function loadFeed() {
+  let edgePayload = null;
   let payload;
 
   try {
-    payload = await loadFeedFromEdge();
+    edgePayload = await loadFeedFromEdge();
 
-    if (payload?.degraded) {
-      payload = await loadFeedFromPublicRest();
+    if (edgePayload?.degraded) {
+      try {
+        payload = await loadFeedFromPublicRest();
+      } catch (error) {
+        payload = {
+          items: Array.isArray(edgePayload.items) ? edgePayload.items : [],
+        };
+      }
+    } else {
+      payload = edgePayload;
     }
   } catch (error) {
     payload = await loadFeedFromPublicRest();
