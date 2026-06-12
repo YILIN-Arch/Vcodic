@@ -97,8 +97,23 @@ function normalizeProduct(row, index) {
     creator: safeCreator(row.creator_name),
     productUrl: safeHttpUrl(row.product_url, "#"),
     imageUrl: safeHttpUrl(row.screenshot_url, ""),
+    publishedAt: row.published_at || row.created_at || "",
     preview: previewClassFor(index),
   };
+}
+
+function toDateLabel(value) {
+  if (!value) {
+    return "刚刚公开";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "刚刚公开";
+  }
+
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
 }
 
 function previewClassName(baseClassName, product) {
@@ -111,9 +126,9 @@ function previewClassName(baseClassName, product) {
   return classes.join(" ");
 }
 
-function previewMarkup(product) {
+function previewMarkup(product, loading = "eager") {
   if (product.imageUrl) {
-    return `<img class="preview-image" src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.title)} 作品封面" loading="eager" decoding="async">`;
+    return `<img class="preview-image" src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.title)} 作品封面" loading="${escapeHtml(loading)}" decoding="async">`;
   }
 
   return `
@@ -141,31 +156,119 @@ function notFoundMarkup(message = "这个作品可能还没有公开，或者已
   `;
 }
 
-function detailMarkup(product) {
+function tryActionMarkup(product) {
+  if (product.productUrl === "#") {
+    return `<span class="action action-mint action-disabled" aria-disabled="true">暂时不可打开</span>`;
+  }
+
   return `
-    <div class="${previewClassName("work-detail-preview", product)}">
-      ${previewMarkup(product)}
-    </div>
-    <div class="work-detail-copy">
-      <p class="hero-eyebrow">作品详情</p>
-      <h1>${escapeHtml(product.title)}</h1>
-      <p class="work-detail-tagline">${escapeHtml(product.shortDescription || product.description)}</p>
+    <a
+      class="action action-mint work-try-action"
+      href="${escapeHtml(product.productUrl)}"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      试试看
+    </a>
+  `;
+}
 
-      <div class="work-detail-creator">
-        <span class="creator-avatar">${escapeHtml(creatorInitial(product.creator))}</span>
-        <span>${escapeHtml(product.creator)}</span>
+function feedbackMarkup() {
+  const reactions = ["好玩", "有用", "好看", "想继续用", "有 bug", "看不懂", "想要同款"];
+
+  return `
+    <section class="work-feedback-panel" aria-labelledby="work-feedback-title">
+      <div>
+        <p class="hero-eyebrow">快速反馈</p>
+        <h2 id="work-feedback-title">试过之后，可以从这些角度反馈</h2>
       </div>
+      <div class="work-feedback-chips" aria-label="反馈入口预览">
+        ${reactions.map((reaction) => `<span>${escapeHtml(reaction)}</span>`).join("")}
+      </div>
+      <p>互动系统下一阶段开放；当前先保留反馈位置，避免详情页变成技术说明页。</p>
+    </section>
+  `;
+}
 
+function relatedWorksMarkup(products, currentId) {
+  const related = products.filter((item) => item.id !== currentId).slice(0, 4);
+
+  if (!related.length) {
+    return `
+      <section class="work-related-panel" aria-labelledby="work-related-title">
+        <div class="section-head section-head-submit">
+          <div>
+            <p class="hero-eyebrow">继续发现</p>
+            <h2 id="work-related-title">还没有更多公开作品</h2>
+          </div>
+          <a class="action-link action-link-subtle" href="./submit.html">发布作品</a>
+        </div>
+        <p class="work-related-empty">等下一批作品通过后，这里会继续推荐可以点开的作品。</p>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="work-related-panel" aria-labelledby="work-related-title">
+      <div class="section-head section-head-submit">
+        <div>
+          <p class="hero-eyebrow">继续发现</p>
+          <h2 id="work-related-title">最新作品</h2>
+        </div>
+        <a class="action-link action-link-subtle" href="./index.html">返回作品流</a>
+      </div>
+      <div class="work-related-grid">
+        ${related.map((item) => `
+          <a class="work-related-card" href="./work.html?id=${encodeURIComponent(item.id)}">
+            <div class="${previewClassName("work-related-preview", item)}">
+              ${previewMarkup(item, "lazy")}
+            </div>
+            <div>
+              <h3>${escapeHtml(item.title)}</h3>
+              <p>${escapeHtml(item.shortDescription || item.description)}</p>
+            </div>
+          </a>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function detailMarkup(product, products) {
+  return `
+    <section class="work-hero-panel" aria-label="${escapeHtml(product.title)}">
+      <div class="${previewClassName("work-detail-preview", product)}">
+        ${previewMarkup(product)}
+      </div>
+      <div class="work-detail-copy">
+        <p class="hero-eyebrow">作品详情</p>
+        <h1>${escapeHtml(product.title)}</h1>
+        <p class="work-detail-tagline">${escapeHtml(product.shortDescription || product.description)}</p>
+
+        <div class="work-detail-meta">
+          <div class="work-detail-creator">
+            <span class="creator-avatar">${escapeHtml(creatorInitial(product.creator))}</span>
+            <span>${escapeHtml(product.creator)}</span>
+          </div>
+          <span>${escapeHtml(toDateLabel(product.publishedAt))}</span>
+        </div>
+
+        <div class="work-detail-actions">
+          ${tryActionMarkup(product)}
+          <a class="action-link action-link-subtle" href="./index.html">返回作品流</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="work-story-panel">
       <div class="work-detail-description">
         <h2>这个作品能做什么</h2>
         <p>${escapeHtml(product.description)}</p>
       </div>
+    </section>
 
-      <div class="work-detail-actions">
-        <a class="action action-mint" href="${escapeHtml(product.productUrl)}" target="_blank" rel="noreferrer">试试看</a>
-        <a class="action-link action-link-subtle" href="./index.html">返回作品流</a>
-      </div>
-    </div>
+    ${feedbackMarkup()}
+    ${relatedWorksMarkup(products, product.id)}
   `;
 }
 
@@ -270,7 +373,7 @@ async function initializeWorkDetail() {
     }
 
     document.title = `VCodic | ${product.title}`;
-    workDetail.innerHTML = detailMarkup(product);
+    workDetail.innerHTML = detailMarkup(product, items);
   } catch (error) {
     workDetail.innerHTML = notFoundMarkup(error.message || "作品读取失败。");
   }
