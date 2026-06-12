@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VCodic | 提交 AI 产品</title>
+    <title>VCodic | 发布作品</title>
     <meta
       name="description"
-      content="向 VCodic 提交你正在做的 AI 产品，补充一句话介绍、产品链接和可选截图。"
+      content="向 VCodic 发布你用 AI 做出来的小作品，补充一句话介绍、链接和可选封面。"
     />
     <link rel="canonical" href="https://vcodic.com/submit" />
-    <meta property="og:title" content="VCodic | 提交 AI 产品" />
+    <meta property="og:title" content="VCodic | 发布作品" />
     <meta
       property="og:description"
-      content="把你的 AI 产品提交到 VCodic，进入待审核内容池。"
+      content="把你用 AI 做出来的小作品发布到 VCodic，让别人点开试试看。"
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://vcodic.com/submit" />
@@ -31,27 +31,27 @@
         </a>
 
         <div class="submit-topbar-meta">
-          <span class="submit-topbar-label">投稿入口</span>
+          <span class="submit-topbar-label">发布入口</span>
           <a class="action-link action-link-subtle" href="./index.html">返回首页</a>
         </div>
       </header>
 
       <main class="submit-shell">
         <section class="submit-panel submit-intro">
-          <p class="hero-eyebrow">内容录入</p>
-          <h1>提交你的 AI 产品</h1>
+          <p class="hero-eyebrow">作品发布</p>
+          <h1>发布你的作品</h1>
           <p class="submit-lead">
-            先收一条能审核、能发布、能回访的结构化投稿。第一版只做最小必需信息。
+            先发一件能被打开、能被试用、能让别人记住的小作品。
           </p>
 
           <div class="submit-checklist" aria-label="投稿须知">
             <article class="submit-checklist-item">
               <strong>会收什么</strong>
-              <p>产品名、链接、一句话介绍、联系人邮箱，截图可选。</p>
+              <p>作品名、链接、一句话介绍、联系人邮箱，封面/截图可选。</p>
             </article>
             <article class="submit-checklist-item">
               <strong>会怎么用</strong>
-              <p>先进入待审核池，通过后再进入公开站点内容流。</p>
+              <p>我们会整理后放进公开作品流，让别人点开试试看。</p>
             </article>
             <article class="submit-checklist-item">
               <strong>图片要求</strong>
@@ -63,11 +63,11 @@
         <section class="submit-panel submit-form-panel">
           <div class="section-head section-head-submit">
             <div>
-              <p class="hero-eyebrow">第一版表单</p>
-              <h2>录入投稿</h2>
+              <p class="hero-eyebrow">作品信息</p>
+              <h2>填写作品</h2>
             </div>
             <p class="submit-aside">
-              提交前请确认链接可访问，文案足够让编辑快速判断价值。
+              发布前请确认链接可访问，文案能让别人一眼知道它能做什么。
             </p>
           </div>
 
@@ -77,7 +77,7 @@
           <form id="submission-form" class="submission-form" novalidate>
             <div class="form-grid">
               <label class="form-field">
-                <span>产品名称 *</span>
+                <span>作品名称 *</span>
                 <input
                   id="product-name"
                   name="product_name"
@@ -89,7 +89,7 @@
               </label>
 
               <label class="form-field">
-                <span>产品链接 *</span>
+                <span>作品链接 *</span>
                 <input
                   id="product-url"
                   name="product_url"
@@ -108,7 +108,7 @@
                   name="tagline"
                   type="text"
                   maxlength="120"
-                  placeholder="用户看一眼就知道产品解决什么问题"
+                  placeholder="别人看一眼就知道这个作品能做什么"
                   required
                 />
               </label>
@@ -120,12 +120,12 @@
                   name="description"
                   rows="5"
                   maxlength="1200"
-                  placeholder="补充适用场景、目标用户、与同类产品的差异。"
+                  placeholder="补充适用场景、目标用户、玩法或亮点。"
                 ></textarea>
               </label>
 
               <label class="form-field">
-                <span>提交人名称</span>
+                <span>创作者名称</span>
                 <input
                   id="creator-name"
                   name="creator_name"
@@ -149,7 +149,7 @@
               </label>
 
               <label class="form-field form-field-wide">
-                <span>产品截图</span>
+                <span>作品封面/截图</span>
                 <input
                   id="screenshot"
                   name="screenshot"
@@ -162,7 +162,7 @@
 
             <div class="submit-actions">
               <button id="submit-button" class="action action-mint" type="submit">
-                提交审核
+                发布作品
               </button>
               <p class="submit-legal">
                 提交即表示你同意 VCodic 按
@@ -175,13 +175,13 @@
           </form>
 
           <section id="submit-success" class="submit-success" hidden aria-live="polite">
-            <p class="hero-eyebrow">已提交</p>
-            <h2>你的投稿已进入待审核池</h2>
+            <p class="hero-eyebrow">已发布</p>
+            <h2>你的作品已收到</h2>
             <p>
-              这条记录已经写入 VCodic 的投稿库。后续通过联系邮箱回访或进入发布流程。
+              这条记录已经写入 VCodic。整理后会进入公开作品流。
             </p>
             <div class="not-found-actions">
-              <a class="action-link" href="./submit.html">继续提交</a>
+              <a class="action-link" href="./submit.html">继续发布</a>
               <a class="action-link action-link-subtle" href="./index.html">返回首页</a>
             </div>
           </section>

@@ -40,7 +40,7 @@ function apiUrl(path) {
 function normalizeProductUrl(rawValue) {
   const value = rawValue.trim();
   if (!value) {
-    throw new Error("请填写产品链接。");
+    throw new Error("请填写作品链接。");
   }
 
   const normalized = /^https?:\/\//i.test(value) ? value : `https://${value}`;
@@ -48,7 +48,7 @@ function normalizeProductUrl(rawValue) {
   try {
     return new URL(normalized).toString();
   } catch (error) {
-    throw new Error("产品链接格式不正确。");
+    throw new Error("作品链接格式不正确。");
   }
 }
 
@@ -152,7 +152,7 @@ function buildPayload(formData, screenshotPath) {
   const contactEmail = formData.get("contact_email").trim();
 
   if (!productName) {
-    throw new Error("请填写产品名称。");
+    throw new Error("请填写作品名称。");
   }
 
   if (!tagline) {
@@ -177,7 +177,7 @@ function buildPayload(formData, screenshotPath) {
 
 function lockForm(locked) {
   submitButton.disabled = locked;
-  submitButton.textContent = locked ? "提交中..." : "提交审核";
+  submitButton.textContent = locked ? "发布中..." : "发布作品";
 
   Array.from(form.elements).forEach((element) => {
     if (element === submitButton) {
@@ -202,7 +202,7 @@ function initializeConfigurationState() {
 
   setNotice(
     configNotice,
-    "投稿页尚未接入 Supabase。先在 site-config.js 填入 SUPABASE URL 和 anon key，再重新部署。",
+    "发布页尚未接入 Supabase。先在 site-config.js 填入 SUPABASE URL 和 anon key，再重新部署。",
     "warning",
   );
   submitButton.disabled = true;

@@ -3,19 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VCodic | 今天有什么 AI 值得试</title>
+    <title>VCodic | vibe coding 作品社区</title>
     <meta
       name="description"
-      content="刷到好玩的 AI 小产品，顺手学会它怎么做。面向中文用户的 AI 产品发现与试玩入口。"
+      content="发现大家用 AI 做出来的小作品。好玩的、实用的、刚做出来的，都可以直接点开试试看。"
     />
     <link rel="canonical" href="https://vcodic.com/" />
     <meta
       property="og:title"
-      content="VCodic - 今天有什么 AI 值得试"
+      content="VCodic - vibe coding 作品社区"
     />
     <meta
       property="og:description"
-      content="好玩的，实用的，能学会的，都先在这里刷到。"
+      content="发现大家用 AI 做出来的小作品，打开就能试试看。"
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://vcodic.com/" />
@@ -23,11 +23,11 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:title"
-      content="VCodic - 今天有什么 AI 值得试"
+      content="VCodic - vibe coding 作品社区"
     />
     <meta
       name="twitter:description"
-      content="好玩的，实用的，能学会的，都先在这里刷到。"
+      content="发现大家用 AI 做出来的小作品，打开就能试试看。"
     />
     <meta name="theme-color" content="#31e6a1" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
@@ -47,139 +47,73 @@
           <input
             id="search-input"
             type="search"
-            placeholder="搜 AI 产品、创作者或关键词"
+            placeholder="搜作品、创作者或关键词"
           />
         </label>
 
       </header>
 
       <div class="layout">
-        <aside class="sidebar reveal" aria-label="用户信息和分类">
-          <section class="profile-card">
+        <aside class="sidebar reveal" aria-label="作品发现导航">
+          <nav class="profile-card discovery-nav" aria-label="VCodic 导航">
             <div class="profile-head">
               <div class="avatar">V</div>
               <div>
-                <h2 class="profile-name" id="profile-name">VCodic</h2>
-                <p class="profile-role" id="profile-role">人工审核的 AI 产品目录</p>
+                <h2 class="profile-name">VCodic</h2>
+                <p class="profile-role">vibe coding 作品社区</p>
               </div>
             </div>
 
-            <div class="profile-stats">
-              <article class="stat-card">
-                <strong id="saved-count">0</strong>
-                <span>已发布</span>
-              </article>
-              <article class="stat-card">
-                <strong id="tried-count">0</strong>
-                <span>提交者</span>
-              </article>
-            </div>
+            <a class="action action-mint action-block" href="./submit.html">发布作品</a>
 
-            <a class="action action-mint action-block" href="./submit.html">发作品</a>
-
-            <div class="category-stack" aria-label="内容说明">
-              <div class="category-item active">
+            <div class="category-stack">
+              <a class="category-item active" href="#featured-works">
                 <span class="category-dot"></span>
-                已通过内容
-              </div>
-              <div class="category-item">人工审核后发布</div>
-              <div class="category-item">先提交，再进入内容池</div>
+                精选作品
+              </a>
+              <a class="category-item" href="#latest-works">最新作品</a>
+              <a class="category-item" href="./submit.html">投稿须知</a>
             </div>
-          </section>
+          </nav>
         </aside>
 
         <main class="content">
-          <section class="mobile-profile reveal">
+          <section class="mobile-profile reveal" aria-label="移动端导航">
             <div class="mobile-profile-main">
               <div class="avatar avatar-small">V</div>
               <div>
-                <h2 class="profile-name" id="mobile-profile-name">VCodic</h2>
-                <p class="profile-role" id="mobile-profile-role">人工审核的 AI 产品目录</p>
+                <h2 class="profile-name">VCodic</h2>
+                <p class="profile-role">vibe coding 作品社区</p>
               </div>
             </div>
-            <div class="mobile-profile-stats">
-              <span id="mobile-published-count">0 已发布</span>
-              <span id="mobile-creator-count">0 提交者</span>
+            <div class="mobile-profile-actions">
+              <a class="action-link" href="#featured-works">精选作品</a>
+              <a class="action-link" href="#latest-works">最新作品</a>
             </div>
-            <a class="action action-mint" href="./submit.html">发作品</a>
+            <a class="action action-mint" href="./submit.html">发布作品</a>
           </section>
 
-          <section class="hero reveal">
+          <section class="hero reveal" id="featured-works">
             <div class="hero-copy">
-              <p class="hero-eyebrow">今天值得先刷的</p>
-              <h1>今天有什么 AI 值得试</h1>
+              <p class="hero-eyebrow">精选作品</p>
+              <h1>发现大家用 AI 做出来的小作品</h1>
               <p class="hero-subtitle">
-                好玩的，实用的，能学会的，都先在这里刷到。
+                好玩的、实用的、刚做出来的，都可以直接点开试试看。
               </p>
             </div>
 
             <div class="hero-tabs" aria-label="内容排序">
-              <button class="sort-pill active" data-sort="new">最新通过</button>
-              <button class="sort-pill" data-sort="old">最早通过</button>
+              <button class="sort-pill active" data-sort="featured">精选</button>
+              <button class="sort-pill" data-sort="new">最新</button>
             </div>
-
-            <article class="featured-card" id="featured-card">
-              <div class="featured-preview preview preview-astria">
-                <div class="preview-window">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-                <div class="preview-panel"></div>
-                <div class="preview-band"></div>
-              </div>
-
-              <div class="featured-body">
-                <div class="featured-kicker" id="featured-kicker">最新通过</div>
-                <h2 id="featured-title">Astria - AI 绘图工具</h2>
-                <p id="featured-description">
-                  一句话生成封面、灵感图和社交配图，不用看参数，打开就能玩。
-                </p>
-
-                <div class="featured-meta">
-                  <span id="featured-creator">小舟</span>
-                  <span id="featured-stats">06.08 收录 · 已通过审核</span>
-                </div>
-
-                <div class="featured-actions">
-                  <a id="featured-link" class="action action-ink" href="https://vcodic.com" target="_blank" rel="noreferrer">打开产品</a>
-                </div>
-              </div>
-            </article>
           </section>
 
-          <section class="feed-section reveal">
+          <section class="feed-section reveal" id="latest-works">
             <div class="section-head">
-              <h2>最新入选</h2>
-              <p>刚通过审核，先从这里看。</p>
+              <h2>最新作品</h2>
+              <p>打开一张卡片，看看这个小作品能做什么。</p>
             </div>
-            <div class="product-grid" id="product-grid"></div>
-          </section>
-
-          <section class="band-grid reveal">
-            <article class="band-card">
-              <div class="section-head section-head-tight">
-                <h2>最近收录</h2>
-                <p>按通过时间排，直接看站内内容池。</p>
-              </div>
-              <div class="mini-list" id="curated-list"></div>
-            </article>
-
-            <article class="band-card">
-              <div class="section-head section-head-tight">
-                <h2>最近提交者</h2>
-                <p>当前页面只展示已经进入公开流的投稿人。</p>
-              </div>
-              <div class="maker-list" id="maker-list"></div>
-            </article>
-          </section>
-
-          <section class="feed-section reveal">
-            <div class="section-head">
-              <h2>更早收录</h2>
-              <p>往前翻，都是已经通过审核的产品。</p>
-            </div>
-            <div class="product-grid" id="secondary-grid"></div>
+            <div class="works-feed" id="works-feed" aria-live="polite"></div>
           </section>
         </main>
       </div>

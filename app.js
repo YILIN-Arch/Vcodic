@@ -1,9 +1,11 @@
 const state = {
-  sort: "new",
+  sort: "featured",
   query: "",
 };
 
 const config = window.VCODIC_CONFIG || {};
+const feedEndpoint = "/api/feed";
+const skeletonCardCount = 8;
 
 const previewClasses = [
   "preview-astria",
@@ -14,7 +16,6 @@ const previewClasses = [
   "preview-story",
 ];
 
-const feedEndpoint = "/api/feed";
 const publicFeedFields = [
   "id",
   "product_name",
@@ -22,31 +23,13 @@ const publicFeedFields = [
   "tagline",
   "description",
   "creator_name",
+  "screenshot_url",
   "published_at",
   "created_at",
 ].join(",");
 
-const featuredCard = document.querySelector("#featured-card");
-const featuredKicker = document.querySelector("#featured-kicker");
-const featuredTitle = document.querySelector("#featured-title");
-const featuredDescription = document.querySelector("#featured-description");
-const featuredCreator = document.querySelector("#featured-creator");
-const featuredStats = document.querySelector("#featured-stats");
-const featuredLink = document.querySelector("#featured-link");
-const featuredPreview = document.querySelector(".featured-preview");
-const productGrid = document.querySelector("#product-grid");
-const secondaryGrid = document.querySelector("#secondary-grid");
-const curatedList = document.querySelector("#curated-list");
-const makerList = document.querySelector("#maker-list");
+const worksFeed = document.querySelector("#works-feed");
 const searchInput = document.querySelector("#search-input");
-const profileName = document.querySelector("#profile-name");
-const profileRole = document.querySelector("#profile-role");
-const mobileProfileName = document.querySelector("#mobile-profile-name");
-const mobileProfileRole = document.querySelector("#mobile-profile-role");
-const savedCount = document.querySelector("#saved-count");
-const triedCount = document.querySelector("#tried-count");
-const mobilePublishedCount = document.querySelector("#mobile-published-count");
-const mobileCreatorCount = document.querySelector("#mobile-creator-count");
 
 let approvedProducts = [];
 
@@ -103,35 +86,13 @@ function previewClassFor(index) {
   return previewClasses[index % previewClasses.length];
 }
 
-function toDateLabel(value) {
-  if (!value) {
-    return "待发布时间";
-  }
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return "待发布时间";
-  }
-
-  return `${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
-}
-
-function toLongDateLabel(value) {
-  if (!value) {
-    return "待发布时间";
-  }
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return "待发布时间";
-  }
-
-  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
-}
-
 function safeCreator(value) {
   const normalized = (value || "").trim();
-  return normalized || "匿名提交";
+  return normalized || "匿名创作者";
+}
+
+function creatorInitial(name) {
+  return (name || "V").trim().slice(0, 1).toUpperCase();
 }
 
 function normalizeProduct(row, index) {
@@ -153,18 +114,30 @@ function normalizeProduct(row, index) {
   };
 }
 
-function bySort(items) {
-  const sorted = [...items].sort((left, right) => {
+function sortByNewest(items) {
+  return [...items].sort((left, right) => {
     const leftTime = new Date(left.publishedAt || 0).getTime();
     const rightTime = new Date(right.publishedAt || 0).getTime();
     return rightTime - leftTime;
   });
+}
 
-  if (state.sort === "old") {
-    return sorted.reverse();
+function sortByFeatured(items) {
+  return sortByNewest(items).sort((left, right) => {
+    if (Boolean(left.imageUrl) === Boolean(right.imageUrl)) {
+      return 0;
+    }
+
+    return left.imageUrl ? -1 : 1;
+  });
+}
+
+function sortedProducts(items) {
+  if (state.sort === "new") {
+    return sortByNewest(items);
   }
 
-  return sorted;
+  return sortByFeatured(items);
 }
 
 function matchesQuery(product) {
@@ -186,34 +159,11 @@ function matchesQuery(product) {
 }
 
 function visibleProducts() {
-  return bySort(approvedProducts.filter(matchesQuery));
+  return sortedProducts(approvedProducts.filter(matchesQuery));
 }
 
-function pickFeaturedProduct(items) {
-  if (!items.length) {
-    return { product: null, prioritized: false };
-  }
-
-  const imageFirstProduct = items.find((item) => item.imageUrl);
-
-  if (imageFirstProduct) {
-    return {
-      product: imageFirstProduct,
-      prioritized: imageFirstProduct !== items[0],
-    };
-  }
-
-  return { product: items[0], prioritized: false };
-}
-
-function previewClassName(baseClassName, product, options = {}) {
-  const classes = [baseClassName];
-
-  if (options.withPreviewShell !== false) {
-    classes.push("preview");
-  }
-
-  classes.push(product.preview);
+function previewClassName(baseClassName, product) {
+  const classes = [baseClassName, "preview", product.preview];
 
   if (product.imageUrl) {
     classes.push("preview-has-image");
@@ -222,15 +172,9 @@ function previewClassName(baseClassName, product, options = {}) {
   return classes.join(" ");
 }
 
-function previewMarkup(product, options = {}) {
-  const imageClassName = options.compact ? "preview-image preview-image-compact" : "preview-image";
-
+function previewMarkup(product) {
   if (product.imageUrl) {
-    return `<img class="${imageClassName}" src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.title)} 产品截图" loading="lazy" decoding="async">`;
-  }
-
-  if (options.compact) {
-    return "";
+    return `<img class="preview-image" src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.title)} 作品封面" loading="lazy" decoding="async">`;
   }
 
   return `
@@ -244,210 +188,100 @@ function previewMarkup(product, options = {}) {
   `;
 }
 
-function emptyStateMarkup(title, message, actionHref, actionLabel) {
-  const actionMarkup = actionHref && actionLabel
-    ? `<a class="action-link" href="${escapeHtml(safeHttpUrl(actionHref, "./submit.html"))}">${escapeHtml(actionLabel)}</a>`
-    : "";
+function workDetailUrl(product) {
+  const params = new URLSearchParams();
+  params.set("id", product.id);
+  return `./work.html?${params.toString()}`;
+}
 
+function productTone(product, index) {
+  if (state.sort === "featured" && product.imageUrl) {
+    return "精选";
+  }
+
+  if (state.sort === "featured" && index < 3) {
+    return "精选";
+  }
+
+  if (state.sort === "new" || index < 3) {
+    return "最新";
+  }
+
+  return "最新";
+}
+
+function productCardMarkup(product, index) {
+  return `
+    <a class="work-card" href="${escapeHtml(workDetailUrl(product))}">
+      <div class="${previewClassName("work-card-preview", product)}">
+        ${previewMarkup(product)}
+        <div class="work-card-title-overlay">
+          <h3>${escapeHtml(product.title)}</h3>
+        </div>
+      </div>
+      <div class="work-card-body">
+        <div class="work-card-meta">
+          <div class="creator-chip">
+            <span class="creator-avatar">${escapeHtml(creatorInitial(product.creator))}</span>
+            <span>${escapeHtml(product.creator)}</span>
+          </div>
+          <span class="work-card-badge">${escapeHtml(productTone(product, index))}</span>
+        </div>
+      </div>
+    </a>
+  `;
+}
+
+function emptyStateMarkup(title, message, actionHref, actionLabel) {
   return `
     <article class="empty-state">
       <div>
         <strong>${escapeHtml(title)}</strong>
         <p>${escapeHtml(message)}</p>
-        ${actionMarkup}
+        <a class="action action-mint" href="${escapeHtml(safeHttpUrl(actionHref, "./submit.html"))}">${escapeHtml(actionLabel)}</a>
       </div>
     </article>
   `;
 }
 
-function miniEmptyMarkup(message) {
-  return `<article class="mini-item mini-item-empty"><p>${escapeHtml(message)}</p></article>`;
-}
-
-function makerEmptyMarkup(message) {
-  return `<article class="maker-item maker-item-empty"><p>${escapeHtml(message)}</p></article>`;
-}
-
-function updateProfileMetrics(items) {
-  const creatorCount = new Set(items.map((item) => item.creator).filter(Boolean)).size;
-
-  savedCount.textContent = String(items.length);
-  triedCount.textContent = String(creatorCount);
-  mobilePublishedCount.textContent = `${items.length} 已发布`;
-  mobileCreatorCount.textContent = `${creatorCount} 提交者`;
-
-  profileName.textContent = "VCodic";
-  mobileProfileName.textContent = "VCodic";
-  profileRole.textContent = items.length
-    ? "人工审核的 AI 产品目录"
-    : "等待第一批已通过产品";
-  mobileProfileRole.textContent = profileRole.textContent;
-}
-
-function updateFeatured(product, options = {}) {
-  if (!product) {
-    featuredKicker.textContent = "公开内容池";
-    featuredTitle.textContent = "还没有已发布产品";
-    featuredDescription.textContent = "先收投稿，再审核发布。第一批通过内容会直接出现在这里。";
-    featuredCreator.textContent = "VCodic";
-    featuredStats.textContent = "当前公开池为空";
-    featuredLink.href = "./submit.html";
-    featuredLink.removeAttribute("target");
-    featuredLink.removeAttribute("rel");
-    featuredLink.textContent = "提交第一条产品";
-    featuredPreview.className = "featured-preview preview preview-recraft";
-    featuredPreview.innerHTML = previewMarkup({ preview: "preview-recraft" });
-    featuredCard.dataset.mode = "empty";
-    return;
-  }
-
-  featuredKicker.textContent = options.prioritized ? "优先主推" : "最新通过";
-  featuredTitle.textContent = product.title;
-  featuredDescription.textContent = product.shortDescription || product.description;
-  featuredCreator.textContent = product.creator;
-  featuredStats.textContent = `${toLongDateLabel(product.publishedAt)} 收录 · 已通过审核`;
-  featuredLink.href = product.productUrl;
-  featuredLink.target = "_blank";
-  featuredLink.rel = "noreferrer";
-  featuredLink.textContent = "打开产品";
-  featuredPreview.className = previewClassName("featured-preview", product);
-  featuredPreview.innerHTML = previewMarkup(product);
-  featuredCard.dataset.mode = "ready";
-}
-
-function productCardMarkup(product) {
-  return `
-    <article class="product-card">
-      <div class="${previewClassName("product-card-preview", product)}">
-        ${previewMarkup(product)}
-      </div>
-      <div class="product-card-body">
-        <h3>${escapeHtml(product.title)}</h3>
-        <p>${escapeHtml(product.description)}</p>
-        <div class="product-meta">
+function skeletonMarkup() {
+  return Array.from({ length: skeletonCardCount }, (_, index) => `
+    <article class="work-card work-card-skeleton" aria-hidden="true">
+      <div class="skeleton-cover skeleton-shimmer skeleton-cover-${(index % 4) + 1}"></div>
+      <div class="work-card-body">
+        <div class="work-card-meta">
           <div class="creator-chip">
-            <span class="creator-dot"></span>
-            <span>${escapeHtml(product.creator)}</span>
+            <span class="skeleton-avatar skeleton-shimmer"></span>
+            <span class="skeleton-line skeleton-line-mid skeleton-shimmer"></span>
           </div>
-          <div class="product-stats">${escapeHtml(toDateLabel(product.publishedAt))} 收录</div>
-        </div>
-        <div class="product-card-actions">
-          <a class="action-link" href="${escapeHtml(product.productUrl)}" target="_blank" rel="noreferrer">打开产品</a>
+          <span class="skeleton-badge skeleton-shimmer"></span>
         </div>
       </div>
     </article>
-  `;
+  `).join("");
+}
+
+function renderSkeletons() {
+  worksFeed.innerHTML = skeletonMarkup();
 }
 
 function renderProducts() {
   const items = visibleProducts();
-  const featuredSelection = pickFeaturedProduct(items);
-  const featured = featuredSelection.product;
-  const rest = featured
-    ? items.filter((item) => item.id !== featured.id)
-    : [];
 
-  updateFeatured(featured, { prioritized: featuredSelection.prioritized });
-
-  const primaryItems = rest.slice(0, 4);
-  const secondaryItems = rest.slice(4);
-
-  productGrid.innerHTML = primaryItems.length
-    ? primaryItems.map(productCardMarkup).join("")
-    : emptyStateMarkup(
-        state.query.trim() ? "没有匹配结果" : "还没有更多已发布内容",
-        state.query.trim()
-          ? `没有找到和“${state.query.trim()}”相关的产品。`
-          : "第一批通过审核的产品会从这里开始继续扩展。",
-      );
-
-  secondaryGrid.innerHTML = secondaryItems.length
-    ? secondaryItems.map(productCardMarkup).join("")
-    : "";
-}
-
-function renderCurated() {
-  const items = bySort(approvedProducts).slice(0, 3);
-
-  curatedList.innerHTML = items.length
-    ? items
-        .map(
-          (item) => `
-            <article class="mini-item">
-              <div class="mini-item-main">
-                <div class="${previewClassName("mini-preview", item, { withPreviewShell: false })}">
-                  ${previewMarkup(item, { compact: true })}
-                </div>
-                <div>
-                  <h3>${escapeHtml(item.title)}</h3>
-                  <p>${escapeHtml(toLongDateLabel(item.publishedAt))} 收录</p>
-                </div>
-              </div>
-              <a class="action-link" href="${escapeHtml(item.productUrl)}" target="_blank" rel="noreferrer">打开</a>
-            </article>
-          `,
-        )
-        .join("")
-    : miniEmptyMarkup("公开列表还没有已通过内容。");
-}
-
-function renderMakers() {
-  const creators = [];
-  const seen = new Map();
-
-  for (const item of approvedProducts) {
-    const key = item.creator;
-    const count = seen.get(key) || 0;
-    seen.set(key, count + 1);
+  if (!items.length) {
+    const hasQuery = Boolean(state.query.trim());
+    worksFeed.innerHTML = hasQuery
+      ? emptyStateMarkup("没有匹配作品", `没有找到和“${state.query.trim()}”相关的小作品。`, "./submit.html", "发布作品")
+      : emptyStateMarkup("还没有作品", "发布你的第一个 vibe coding 小作品。", "./submit.html", "发布作品");
+    return;
   }
 
-  for (const [name, count] of seen.entries()) {
-    creators.push({
-      name,
-      count,
-    });
-  }
-
-  creators.sort((left, right) => right.count - left.count);
-
-  makerList.innerHTML = creators.length
-    ? creators
-        .slice(0, 4)
-        .map(
-          (maker) => `
-            <article class="maker-item">
-              <div class="maker-item-main">
-                <div class="maker-avatar"></div>
-                <div>
-                  <h3>${escapeHtml(maker.name)}</h3>
-                  <p>已收录 ${escapeHtml(maker.count)} 条</p>
-                </div>
-              </div>
-              <span class="follow-button">已发布</span>
-            </article>
-          `,
-        )
-        .join("")
-    : makerEmptyMarkup("还没有可公开展示的提交者。");
-}
-
-function renderEverything() {
-  updateProfileMetrics(approvedProducts);
-  renderCurated();
-  renderMakers();
-  renderProducts();
+  worksFeed.innerHTML = items.map(productCardMarkup).join("");
 }
 
 function renderFetchFailure(message) {
   approvedProducts = [];
-  updateProfileMetrics([]);
-  updateFeatured(null);
-  featuredKicker.textContent = "数据连接失败";
-  featuredDescription.textContent = message;
-  productGrid.innerHTML = emptyStateMarkup("暂时无法读取公开内容", message, "./submit.html", "继续收投稿");
-  secondaryGrid.innerHTML = "";
-  curatedList.innerHTML = miniEmptyMarkup("暂时无法读取公开列表。");
-  makerList.innerHTML = makerEmptyMarkup("暂时无法读取提交者列表。");
+  worksFeed.innerHTML = emptyStateMarkup("暂时无法读取作品", message, "./submit.html", "发布作品");
 }
 
 async function parseJsonResponse(response) {
@@ -468,7 +302,7 @@ async function loadFeedFromEdge() {
   const payload = await parseJsonResponse(response);
 
   if (!response.ok) {
-    let message = `公开内容读取失败 (${response.status})`;
+    let message = `作品读取失败 (${response.status})`;
 
     if (payload && payload.error) {
       message = payload.error;
@@ -482,7 +316,7 @@ async function loadFeedFromEdge() {
 
 async function loadFeedFromPublicRest() {
   if (!isPublicFeedConfigured()) {
-    throw new Error("公开内容尚未配置 Supabase anon 读取。");
+    throw new Error("公开作品读取尚未配置 Supabase anon。");
   }
 
   const params = new URLSearchParams();
@@ -506,7 +340,7 @@ async function loadFeedFromPublicRest() {
       payload?.message ||
       payload?.error_description ||
       payload?.error ||
-      `公开内容读取失败 (${response.status})`;
+      `作品读取失败 (${response.status})`;
     throw new Error(message);
   }
 
@@ -544,14 +378,13 @@ async function loadFeed() {
 function bindSortTabs() {
   document.querySelectorAll(".sort-pill").forEach((button) => {
     button.addEventListener("click", () => {
-      state.sort = button.dataset.sort || "new";
+      state.sort = button.dataset.sort || "featured";
 
       document.querySelectorAll(".sort-pill").forEach((item) => {
         item.classList.toggle("active", item === button);
       });
 
       renderProducts();
-      renderCurated();
     });
   });
 }
@@ -562,9 +395,10 @@ searchInput.addEventListener("input", (event) => {
 });
 
 bindSortTabs();
+renderSkeletons();
 
 loadFeed()
-  .then(renderEverything)
+  .then(renderProducts)
   .catch((error) => {
-    renderFetchFailure(error.message || "公开内容读取失败。");
+    renderFetchFailure(error.message || "作品读取失败。");
   });
